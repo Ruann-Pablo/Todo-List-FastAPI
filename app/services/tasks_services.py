@@ -29,18 +29,18 @@ class TaskService:
 
     def update_task_sv(self, task_id: int, task_data: TaskUpdate, user_id: int):
         task = get_task_or_404(self.db, task_id)
-        check_owner = check_task_owner(task_id, user_id)
+        check_owner = check_task_owner(task, user_id)
 
-        if check_owner:
-            task_data_up = task_data.model_dump(exclude_unset=True)
+        task_data_up = task_data.model_dump(exclude_unset=True)
 
-            for chave, valor in task_data_up.items():
-                if hasattr(task, chave):
-                    setattr(task, chave, valor)
+        for chave, valor in task_data_up.items():
+            if hasattr(task, chave):
+                setattr(task, chave, valor)
 
-            self.db.commit()
-            self.db.refresh(task)
-            return task
+        self.db.commit()
+        self.db.refresh(task)
+
+        return task
 
     def delete_task(self, task_id: int, user_id: int):
         task = get_task_or_404(self.db, task_id)
