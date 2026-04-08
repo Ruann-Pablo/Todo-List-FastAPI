@@ -38,20 +38,20 @@ class UserService:
     def update_user_service(self, user_id: int, user_data_up: UserUpdate):
         user = get_user_or_404(self.db, user_id)
 
-        if user:
-            update_datas = user_data_up.model_dump(exclude_unset=True)
+        update_datas = user_data_up.model_dump(exclude_unset=True)
 
-            for field, value in update_datas.items():
-                setattr(user, field, value)
+        for field, value in update_datas.items():
+            setattr(user, field, value)
 
-            self.db.commit()
-            self.db.refresh(user)
-            return user
+        self.db.commit()
+        self.db.refresh(user)
+
+        return user
 
     def delete_user_service(self, user_id: int):
         user = get_user_or_404(self.db, user_id)
 
-        if user:
-            self.db.delete(user)
-            self.db.commit()
-            return True
+        self.db.delete(user)
+        self.db.commit()
+
+        return True
