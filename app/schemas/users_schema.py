@@ -16,7 +16,6 @@ class LoginUser(BaseModel):
     password: str
 
 
-# ver se tem alguma forma de reaproveitar a base do Create. Criar uma classe genérica?
 class UserUpdate(BaseModel):
     name: str | None = None
     email: EmailStr | None = None
