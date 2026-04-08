@@ -1,0 +1,35 @@
+# Python
+__pycache__
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.pytest_cache/
+lixeira.py
+
+# Virtual environment
+.venv
+env
+venv
+ENV
+env.bak
+venv.bak
+
+# Environment variables (secrets)
+.env
+.flaskenv
+
+# Databases
+*.db
+test_db.db
+
+# FastAPI Cloud deployment specific ignores
+.fastapicloudignore
+
+# Editors and IDEs
+.idea/  # For PyCharm and other JetBrains IDEs
+.vscode/
+
+# Operating System
+.DS_Store
+Thumbs.db
