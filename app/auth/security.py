@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from pwdlib import PasswordHash
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
@@ -30,4 +31,6 @@ def decode_access_token(token: str):
         )
         return payload
     except JWTError:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido"
+        )
