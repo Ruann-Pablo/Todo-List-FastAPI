@@ -29,6 +29,18 @@ def get_task_or_404(db: Session, task_id: int):
     return task
 
 
+def get_all_tasks_or_404(db: Session, task_tile: str):
+    query = select(Task).where(Task.id == task_tile)
+    all_tasks = db.execute(query).scalars().all()
+
+    if not all_tasks:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Nenhuma task não encontrada"
+        )
+
+    return all_tasks
+
+
 def check_task_owner(task, user_id: int):
     if task.user_id != user_id:
         raise HTTPException(

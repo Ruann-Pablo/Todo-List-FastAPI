@@ -37,6 +37,18 @@ def get_task_by_id(
     return response_task
 
 
+@router.get(
+    "/",
+    status_code=status.HTTP_200_OK,
+    response_model=list[TaskResponse],
+)
+def get_task_by_title(task_title: str, db: Session = Depends(get_db)):
+    service = TaskService(db)
+    response_task = service.get_task_title(task_title)
+
+    return response_task
+
+
 @router.patch(
     "/{task_id}", status_code=status.HTTP_200_OK, response_model=UpdateTaskResponse
 )

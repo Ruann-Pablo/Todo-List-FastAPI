@@ -3,7 +3,7 @@ from sqlalchemy import select, delete
 from app.models.tasks_model import Task
 from app.models.user_model import User
 from app.schemas.tasks_schema import TaskCreate, TaskUpdate
-from app.utils.db_helpers import get_task_or_404, check_task_owner
+from app.utils.db_helpers import get_task_or_404, get_all_tasks_or_404, check_task_owner
 
 
 class TaskService:
@@ -26,6 +26,10 @@ class TaskService:
         check_task_owner(task, user_id)
 
         return task
+
+    def get_task_title(self, task_title: str):
+        all_tasks = get_all_tasks_or_404(self.db, task_title)
+        return all_tasks
 
     def update_task_sv(self, task_id: int, task_data: TaskUpdate, user_id: int):
         task = get_task_or_404(self.db, task_id)
