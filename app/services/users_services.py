@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import select, delete
 from app.models.user_model import User
@@ -27,7 +27,9 @@ class UserService:
         user = self.db.execute(query).scalars().first()
 
         if not user or not verify_password(user_data.password, user.password):
-            raise ValueError("Credenciais inválidas")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais inválidas"
+            )
 
         return user
 

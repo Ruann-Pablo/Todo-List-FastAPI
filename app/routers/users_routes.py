@@ -1,8 +1,9 @@
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.services.users_services import UserService
-from app.auth.security import create_access_token
+from app.services.auth_service import AuthService
+from app.auth.security import create_token, decode_token
 from datetime import timedelta
 from app.schemas.users_schema import (
     CreateUser,
@@ -12,7 +13,7 @@ from app.schemas.users_schema import (
     CreateUserResponse,
     UpdateUserResponse,
 )
-from app.auth.dependicies import get_current_user
+from app.auth.dependicies import get_current_user, oauth2_scheme
 
 router = APIRouter(prefix="/user", tags=["Users"])
 
@@ -25,25 +26,25 @@ router = APIRouter(prefix="/user", tags=["Users"])
 def create_user(user: CreateUser, db: Session = Depends(get_db)):
     service = UserService(db)
     new_user = service.create_user(user)
+
     return new_user
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 def login_user(user_datas: LoginUser, db: Session = Depends(get_db)):
     service = UserService(db)
-    try:
-        user = service.auth_user(user_datas)
-        access_token = create_access_token(user.id)
-        refresh_token = create_access_token(user.id, time_token=timedelta(days=7))
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "token_type": "Bearer",
-        }
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais inválidas"
-        )
+    user = service.auth_user(user_datas)
+
+    access_token = create_token(user.id, type_token="access")
+    refresh_token = create_token(
+        user.id, type_token="refresh", time_token=timedelta(days=7)
+    )
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "Bearer",
+    }
 
 
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
@@ -71,3 +72,12 @@ def delete_user(db: Session = Depends(get_db), current_user=Depends(get_current_
     service = UserService(db)
     user = service.delete_user_service(current_user.id)
     return {"message": "Usuário deletado com sucesso."}
+
+
+@router.post("/refresh")
+def use_refresh_token(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
+    service = AuthService(db)
+    payload = service.refresh_tokens(token)
+    return payload
