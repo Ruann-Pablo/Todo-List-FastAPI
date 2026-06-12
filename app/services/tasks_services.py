@@ -12,6 +12,7 @@ class TaskService:
 
     def create_task(self, task_data: TaskCreate, user_id: int):
         new_task = Task(
+            title=task_data.title,
             description=task_data.description,
             conclued=task_data.conclued,
             user_id=user_id,
@@ -27,8 +28,10 @@ class TaskService:
 
         return task
 
-    def get_task_title(self, task_title: str):
+    def get_task_title(self, task_title: str, user_id: int):
         all_tasks = get_all_tasks_or_404(self.db, task_title)
+        check_task_owner(all_tasks, user_id)
+
         return all_tasks
 
     def update_task_sv(self, task_id: int, task_data: TaskUpdate, user_id: int):

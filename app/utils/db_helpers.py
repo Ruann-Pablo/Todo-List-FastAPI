@@ -30,7 +30,7 @@ def get_task_or_404(db: Session, task_id: int):
 
 
 def get_all_tasks_or_404(db: Session, task_tile: str):
-    query = select(Task).where(Task.id == task_tile)
+    query = select(Task).where(Task.title == task_tile)
     all_tasks = db.execute(query).scalars().all()
 
     if not all_tasks:
