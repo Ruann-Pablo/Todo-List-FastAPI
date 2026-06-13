@@ -11,7 +11,7 @@ class User(Base):
         Integer, index=True, primary_key=True, autoincrement=True
     )
     name: Mapped[str] = mapped_column(String, index=True)
-    email: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc)

@@ -13,7 +13,7 @@ from app.schemas.users_schema import (
     CreateUserResponse,
     UpdateUserResponse,
 )
-from app.auth.dependicies import get_current_user, oauth2_scheme
+from app.auth.dependicies import get_current_user, security
 
 router = APIRouter(prefix="/user", tags=["Users"])
 
@@ -54,9 +54,7 @@ def get_user_me(db: Session = Depends(get_db), current_user=Depends(get_current_
     return user
 
 
-@router.patch(
-    "/{user_id}", status_code=status.HTTP_200_OK, response_model=UpdateUserResponse
-)
+@router.patch("/me", status_code=status.HTTP_200_OK, response_model=UpdateUserResponse)
 def update_user(
     data_user: UserUpdate,
     db: Session = Depends(get_db),
@@ -75,9 +73,7 @@ def delete_user(db: Session = Depends(get_db), current_user=Depends(get_current_
 
 
 @router.post("/refresh")
-def use_refresh_token(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-):
+def use_refresh_token(token: str = Depends(security), db: Session = Depends(get_db)):
     service = AuthService(db)
     payload = service.refresh_tokens(token)
     return payload

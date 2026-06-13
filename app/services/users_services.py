@@ -43,7 +43,10 @@ class UserService:
         update_datas = user_data_up.model_dump(exclude_unset=True)
 
         for field, value in update_datas.items():
-            setattr(user, field, value)
+            if field == "password":
+                setattr(user, field, hash_password(value))
+            else:
+                setattr(user, field, value)
 
         self.db.commit()
         self.db.refresh(user)

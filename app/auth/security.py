@@ -20,10 +20,12 @@ def create_token(
     time_token=timedelta(minutes=settings.ACESS_TOKEN_EXPIRE_MINUTES),
 ):
     data_expiracao = datetime.now(timezone.utc) + time_token
-    payload = {"sub": user_id, "type": type_token, "exp": data_expiracao}
+    payload = {"sub": str(user_id), "type": type_token, "exp": data_expiracao}
     encoded_token = jwt.encode(payload, settings.SECRET_KEY, settings.ALGORITHM)
     return encoded_token
 
 
 def decode_token(token: str) -> dict:
-    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    jwt_decode = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+
+    return jwt_decode
